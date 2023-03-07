@@ -113,8 +113,14 @@ function kstesstat(ghat,G,Omegadiag,taun,solution)
         return -100
     end
     dr,dg=size(G)
-    KS=Model(KNITRO.Optimizer)
-    set_optimizer_attribute(KS,"outlev",0)
+    #KS=Model(KNITRO.Optimizer)
+    KScommand="KS=Model($optimname.Optimizer)"
+    eval(Meta.parse(KScommand))
+    ## For KNITRO
+    #set_optimizer_attribute(KS,"outlev",0)
+    ##For Ipopt
+    set_optimizer_attribute(KS,"print_level",0)
+
     @variable(KS,etavar[1:dg]>=taun/dg) #taun is a tuning parameter
     @objective(KS,Min,sum((sqrt(Omegadiag[r])*(ghat[r]-sum(G[r,l]*etavar[l] for l in 1:dg)))^2 for r in 1:dr))
     JuMP.optimize!(KS)
@@ -172,8 +178,13 @@ function preferencesRDEU(dYu, model)
     B=[[] for i=1:length(U)]
     t=1
     for j in 1:length(U)
-        KS=Model(KNITRO.Optimizer)
-        set_optimizer_attribute(KS,"outlev",0)
+        KScommand="KS=Model($optimname.Optimizer)"
+        eval(Meta.parse(KScommand))
+        #KS=Model(KNITRO.Optimizer)
+        ##for KNITRO
+        #set_optimizer_attribute(KS,"outlev",0)
+        ## for Ipopt 
+        set_optimizer_attribute(KS,"print_level",0)
         @variable(KS,uvar[1:K]>=0)
         @objective(KS,Min,uvar[1]^2);
         if model=="EU"

@@ -3,15 +3,22 @@ Pkg.activate(".")
 using Distributed
 using Statistics
 using DataFrames, CSV
-addprocs(7)
+addprocs(1)
+## I am declaring the name of the optimizer here so that I can call it in the @everywhere block
 
 @everywhere begin
+  optimname="Ipopt"
   using Random
   using Combinatorics
   using LinearAlgebra
   using JuMP
-  using KNITRO
+  ## concatenate the using command and name of the optimizer 
+  calloptim="using $optimname"
+  ##execute calloptim as a program
+  eval(Meta.parse(calloptim))
 end
+
+
 
 @everywhere model="RDEU"   # put "EU" or "RDEU"
 println(model)
@@ -19,7 +26,7 @@ println(model)
 
 ## Defining the file directories
 tempdir1=@__DIR__
-rootdir=tempdir1[1:findfirst("Replication_AK_RDEU",tempdir1)[end]]
+rootdir=tempdir1[1:findfirst("Replication_RRDEU",tempdir1)[end]]
 
 ## Functions
 @everywhere include($(rootdir)*"/testing_RDEU/functions_common_RDEU.jl")
@@ -60,5 +67,5 @@ Tn=N*kstesstat(ghat,G,Omegadiag,0.0,false)
 pvalue=mean(Tn.<=N.*collect(Boot))
 
 ## Saving the output
-CSV.write(rootdir*"/results/Tn_pval_$(model).csv", DataFrame(Tn=Tn, pvalue=pvalue))
+CSV.write(rootdir*"/results/Tn_pval_$(model)_$(optimname).csv", DataFrame(Tn=Tn, pvalue=pvalue))
 println("Done!")
