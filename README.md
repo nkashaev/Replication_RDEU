@@ -14,6 +14,7 @@ Software
 A version 1.6.4 of the `Julia` programming language was used in coding the analysis files. For details about how to install `Julia` on different platforms and make `Julia` programs executable from the command line see <https://julialang.org/downloads/platform/>. After installation of `Julia 1.6.4.` run `using Pkg` and `Pkg.instantiate()` in the `Julia` terminal after setting the replication folder as the main one.
 
 Some simulations and estimations use `KNITRO 12.3`.  
+In this version if you do not have `KNITRO 12.3` then you can use `Ipopt`. Results are close and qualitative results are the same. Use Knitro when possible. 
 
 Hardware
 ========
